@@ -30,6 +30,7 @@ import org.pixeldroid.app.utils.api.objects.FeedContent
 import org.pixeldroid.app.utils.db.entities.UserDatabaseEntity
 import org.pixeldroid.app.utils.db.updateUserInfoDb
 import org.pixeldroid.app.utils.setProfileImageFromURL
+import org.pixeldroid.app.utils.WebViewWarmup
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -204,6 +205,7 @@ class ProfileActivity : BaseActivity() {
         } else {
             //if we *are* viewing our own account, activate the edit button
             activateEditButton()
+            WebViewWarmup.scheduleWarmup(this)
         }
 
         // On click open followers list

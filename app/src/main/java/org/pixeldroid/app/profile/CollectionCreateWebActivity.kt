@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.pixeldroid.app.R
 import org.pixeldroid.app.databinding.ActivityCollectionCreateWebBinding
 import org.pixeldroid.app.utils.BaseActivity
+import org.pixeldroid.app.utils.WebViewWarmup
 import org.pixeldroid.app.utils.openUrl
 
 class CollectionCreateWebActivity : BaseActivity() {
@@ -26,6 +27,7 @@ class CollectionCreateWebActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        WebViewWarmup.scheduleWarmup(this, delayMs = 0L)
         binding = ActivityCollectionCreateWebBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
