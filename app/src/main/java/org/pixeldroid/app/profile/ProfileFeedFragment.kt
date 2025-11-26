@@ -203,9 +203,8 @@ class CollectionsViewHolder(private val binding: ItemCollectionCardBinding) :
 
     fun bind(collection: Collection) {
         val context = binding.root.context
-        val title = collection.title.ifBlank {
-            context.getString(R.string.collection_title_placeholder)
-        }
+        val title = collection.title?.takeUnless { it.isBlank() }
+            ?: context.getString(R.string.collection_title_placeholder)
         binding.collectionTitle.text = title
 
         val postsLabel = if (collection.post_count == 0) {
