@@ -31,6 +31,7 @@ import org.pixeldroid.app.profile.CollectionActivity.Companion.ADD_COLLECTION_TA
 import org.pixeldroid.app.profile.CollectionActivity.Companion.ADD_TO_COLLECTION_RESULT
 import org.pixeldroid.app.profile.CollectionActivity.Companion.DELETE_FROM_COLLECTION_RESULT
 import org.pixeldroid.app.profile.CollectionActivity.Companion.DELETE_FROM_COLLECTION_TAG
+import org.pixeldroid.app.profile.CollectionCreateWebActivity
 import org.pixeldroid.app.utils.BlurHashDecoder
 import org.pixeldroid.app.utils.api.PixelfedAPI
 import org.pixeldroid.app.utils.api.objects.Account
@@ -40,7 +41,6 @@ import org.pixeldroid.app.utils.api.objects.FeedContent
 import org.pixeldroid.app.utils.api.objects.Status
 import org.pixeldroid.app.utils.db.entities.UserDatabaseEntity
 import org.pixeldroid.app.utils.displayDimensionsInPx
-import org.pixeldroid.app.utils.openUrl
 import org.pixeldroid.app.utils.setSquareImageFromURL
 
 /**
@@ -188,18 +188,9 @@ class ProfileFeedFragment : UncachedFeedFragment<FeedContent>() {
 
             if(collections && post == null){
                 (holder as AddCollectionViewHolder).itemView.setOnClickListener {
-                    val domain = user?.instance_uri
-                    val url = "$domain/i/collections/create"
-
-                    if(domain.isNullOrEmpty() || !requireContext().openUrl(url)) {
-                        binding?.let { binding ->
-                            Snackbar.make(
-                                binding.root, getString(R.string.new_collection_link_failed),
-                                Snackbar.LENGTH_LONG).show()
-                        }
-                    }
+                    val intent = Intent(requireContext(), CollectionCreateWebActivity::class.java)
+                    startActivity(intent)
                 }
-
             }
         }
     }

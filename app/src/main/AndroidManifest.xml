@@ -85,8 +85,13 @@
         <activity
             android:name=".profile.ProfileActivity"
             android:theme="@style/BaseAppTheme"/>
-        <activity android:name=".profile.CollectionActivity"
-            android:theme="@style/BaseAppTheme"/>
+        <activity
+            android:name=".profile.CollectionActivity"
+            android:theme="@style/BaseAppTheme" />
+        <activity
+            android:name=".profile.CollectionCreateWebActivity"
+            android:exported="false"
+            android:theme="@style/BaseAppTheme" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings2"
