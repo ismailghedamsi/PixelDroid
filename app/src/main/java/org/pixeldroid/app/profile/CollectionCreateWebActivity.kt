@@ -22,6 +22,9 @@ import org.pixeldroid.app.utils.openUrl
 class CollectionCreateWebActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCollectionCreateWebBinding
+    private lateinit var primaryUrl: String
+    private lateinit var fallbackUrl: String
+    private var fallbackTried = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +48,8 @@ class CollectionCreateWebActivity : BaseActivity() {
         }
 
         val instanceUrl = user.instance_uri.trimEnd('/')
-        val createUrl = "$instanceUrl/i/collections/create"
+        primaryUrl = "$instanceUrl/i/collections/create"
+        fallbackUrl = "$instanceUrl/collections/create"
 
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
@@ -89,17 +93,41 @@ class CollectionCreateWebActivity : BaseActivity() {
                 request: WebResourceRequest?,
                 error: WebResourceError?
             ) {
-                binding.progress.isVisible = false
-                Snackbar.make(binding.root, getString(R.string.something_went_wrong), Snackbar.LENGTH_LONG).show()
+                if (request?.isForMainFrame == true) {
+                    handleLoadFailure()
+                }
+            }
+
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                errorResponse: android.webkit.WebResourceResponse?
+            ) {
+                if (request?.isForMainFrame == true && errorResponse?.statusCode == 404) {
+                    handleLoadFailure()
+                }
             }
         }
 
-        binding.webView.loadUrl(createUrl)
+        binding.webView.loadUrl(primaryUrl)
     }
 
     private fun openExternalUrl(url: String) {
         if (!openUrl(url)) {
             Snackbar.make(binding.root, getString(R.string.something_went_wrong), Snackbar.LENGTH_LONG).show()
+        }
+    }
+
+    private fun handleLoadFailure() {
+        binding.progress.isVisible = false
+        if (!fallbackTried) {
+            fallbackTried = true
+            binding.webView.loadUrl(fallbackUrl)
+        } else {
+            Snackbar.make(binding.root, getString(R.string.something_went_wrong), Snackbar.LENGTH_LONG)
+                .setAction(R.string.open_in_browser) {
+                    openExternalUrl(primaryUrl)
+                }.show()
         }
     }
 
