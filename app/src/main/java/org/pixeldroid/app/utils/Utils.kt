@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
 import okhttp3.HttpUrl
@@ -37,7 +38,12 @@ import org.pixeldroid.app.R
 import org.pixeldroid.app.utils.db.AppDatabase
 import org.pixeldroid.app.utils.db.entities.TabsDatabaseEntity
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import java.util.Locale
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -169,10 +175,25 @@ fun setThemeFromPreferences(preferences: SharedPreferences, resources: Resources
 fun Context.getColorFromAttr(@AttrRes attrColor: Int): Int = MaterialColors.getColor(this, attrColor, Color.BLACK)
 
 
+private val legacyPixelfedFormatter: DateTimeFormatter = DateTimeFormatterBuilder()
+    .appendPattern("yyyy-MM-dd HH:mm:ss")
+    .optionalStart()
+    .appendLiteral('.')
+    .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, false)
+    .optionalEnd()
+    .toFormatter()
+
 val typeAdapterInstantDeserializer: JsonDeserializer<Instant> = JsonDeserializer { json: JsonElement, _, _ ->
-    DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(
-        json.asString, Instant::from
-    )
+    val raw = json.asString
+    parseInstant(raw)
+        ?: throw JsonParseException("Unable to parse Instant from '$raw'")
+}
+
+private fun parseInstant(raw: String): Instant? {
+    return runCatching { Instant.parse(raw) }.getOrNull()
+        ?: runCatching { DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(raw, Instant::from) }.getOrNull()
+        ?: runCatching { OffsetDateTime.parse(raw).toInstant() }.getOrNull()
+        ?: runCatching { LocalDateTime.parse(raw, legacyPixelfedFormatter).toInstant(ZoneOffset.UTC) }.getOrNull()
 }
 
 val typeAdapterInstantSerializer: JsonSerializer<Instant> = JsonSerializer { src: Instant, _, _ ->
