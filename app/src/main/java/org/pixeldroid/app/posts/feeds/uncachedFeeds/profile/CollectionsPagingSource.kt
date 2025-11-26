@@ -8,21 +8,26 @@ import org.pixeldroid.app.utils.api.objects.Collection
 class CollectionsPagingSource(
     private val api: PixelfedAPI,
     private val accountId: String,
-) : PagingSource<String, Collection>() {
-    override suspend fun load(params: LoadParams<String>): LoadResult<String, Collection> {
+) : PagingSource<Int, Collection>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Collection> {
         return try {
-            val posts  = api.accountCollections(accountId)
+            val page = params.key ?: 1
+            val collections = api.accountCollections(accountId, page)
 
             LoadResult.Page(
-                data = posts,
-                prevKey = null,
-                //TODO pagination. For now, don't paginate
-                nextKey = null
+                data = collections,
+                prevKey = if (page == 1) null else page - 1,
+                nextKey = if (collections.isEmpty()) null else page + 1
             )
         } catch (exception: Exception) {
             LoadResult.Error(exception)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<String, Collection>): String? = null
+    override fun getRefreshKey(state: PagingState<Int, Collection>): Int? {
+        return state.anchorPosition?.let { anchor ->
+            val anchorPage = state.closestPageToPosition(anchor)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
+    }
 }

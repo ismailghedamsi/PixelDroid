@@ -216,7 +216,8 @@ interface PixelfedAPI {
 
     @GET("/api/v1.1/collections/accounts/{id}")
     suspend fun accountCollections(
-        @Path("id") account_id: String? = null
+        @Path("id") account_id: String? = null,
+        @Query("page") page: Int? = null
     ): List<Collection>
 
     @GET("/api/v1.1/collections/items/{id}")
