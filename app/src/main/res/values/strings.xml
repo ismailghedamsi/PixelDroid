@@ -316,6 +316,17 @@ For more info about Pixelfed, you can check here: https://pixelfed.org"</string>
     <string name="error_add_post_to_collection">Failed to add post to the collection</string>
     <string name="error_remove_post_from_collection">Failed to remove post from the collection</string>
     <string name="removed_post_from_collection">Removed post from collection</string>
+    <string name="collection_thumbnail">Collection preview</string>
+    <string name="collection_empty_state">No posts yet</string>
+    <string name="collection_title_placeholder">Untitled collection</string>
+    <string name="collection_visibility_public">Public</string>
+    <string name="collection_visibility_private">Private</string>
+    <string name="collection_visibility_draft">Draft</string>
+    <string name="collection_meta_template">%1$s · %2$s</string>
+    <plurals name="collection_post_count">
+        <item quantity="one">%d post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
     <plurals name="replies_count">
         <item quantity="one">%d reply</item>
         <item quantity="other">%d replies</item>

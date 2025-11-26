@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.gridlayout.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:columnCount="3">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/collectionCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="16dp"
+        app:cardUseCompatPadding="false"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/collectionThumbnail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/collection_thumbnail"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/collectionScrim"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/collection_card_scrim"
+                app:layout_constraintBottom_toBottomOf="@id/collectionThumbnail"
+                app:layout_constraintEnd_toEndOf="@id/collectionThumbnail"
+                app:layout_constraintStart_toStartOf="@id/collectionThumbnail"
+                app:layout_constraintTop_toTopOf="@id/collectionThumbnail" />
+
+            <TextView
+                android:id="@+id/collectionTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="28dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@id/collectionScrim"
+                app:layout_constraintEnd_toEndOf="@id/collectionScrim"
+                app:layout_constraintStart_toStartOf="@id/collectionScrim"
+                tools:text="Weekend vibes" />
+
+            <TextView
+                android:id="@+id/collectionMeta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@id/collectionScrim"
+                app:layout_constraintEnd_toEndOf="@id/collectionScrim"
+                app:layout_constraintStart_toStartOf="@id/collectionScrim"
+                tools:text="Public · 8 posts" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.gridlayout.widget.GridLayout>
+
+

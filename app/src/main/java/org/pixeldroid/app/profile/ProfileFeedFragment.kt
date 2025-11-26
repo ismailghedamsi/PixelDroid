@@ -21,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.pixeldroid.app.R
 import org.pixeldroid.app.databinding.FragmentProfilePostsBinding
+import org.pixeldroid.app.databinding.ItemCollectionCardBinding
 import org.pixeldroid.app.posts.PostActivity
 import org.pixeldroid.app.posts.StatusViewHolder
 import org.pixeldroid.app.posts.feeds.uncachedFeeds.*
@@ -206,42 +207,59 @@ class ProfileFeedFragment : UncachedFeedFragment<FeedContent>() {
 }
 
 
-class CollectionsViewHolder(binding: FragmentProfilePostsBinding) : RecyclerView.ViewHolder(binding.root) {
-    private val postPreview: ImageView = binding.postPreview
-    private val albumIcon: ImageView = binding.albumIcon
-    private val videoIcon: ImageView = binding.videoIcon
+class CollectionsViewHolder(private val binding: ItemCollectionCardBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(collection: Collection) {
+        val context = binding.root.context
+        val title = collection.title.ifBlank {
+            context.getString(R.string.collection_title_placeholder)
+        }
+        binding.collectionTitle.text = title
 
-        if (collection.post_count == 0){
-            //No media in this collection, so put a little icon there
-            postPreview.scaleX = 0.3f
-            postPreview.scaleY = 0.3f
-            Glide.with(postPreview).load(R.drawable.ic_comment_empty).into(postPreview)
-            albumIcon.visibility = View.GONE
-            videoIcon.visibility = View.GONE
+        val postsLabel = if (collection.post_count == 0) {
+            context.getString(R.string.collection_empty_state)
         } else {
-            postPreview.scaleX = 1f
-            postPreview.scaleY = 1f
-            setSquareImageFromURL(postPreview, collection.thumb, postPreview)
-            if (collection.post_count > 1) {
-                albumIcon.visibility = View.VISIBLE
-            } else {
-                albumIcon.visibility = View.GONE
-            }
-            videoIcon.visibility = View.GONE
+            context.resources.getQuantityString(
+                R.plurals.collection_post_count,
+                collection.post_count,
+                collection.post_count
+            )
         }
 
-        postPreview.setOnClickListener {
-            val intent = Intent(postPreview.context, CollectionActivity::class.java)
-            intent.putExtra(CollectionActivity.COLLECTION_TAG, collection)
-            postPreview.context.startActivity(intent)
+        val visibilityLabel = when (collection.visibility) {
+            Collection.Visibility.public -> context.getString(R.string.collection_visibility_public)
+            Collection.Visibility.private -> context.getString(R.string.collection_visibility_private)
+            Collection.Visibility.draft -> context.getString(R.string.collection_visibility_draft)
+        }
+        binding.collectionMeta.text =
+            context.getString(R.string.collection_meta_template, visibilityLabel, postsLabel)
+
+        if (collection.post_count == 0) {
+            binding.collectionThumbnail.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            Glide.with(binding.collectionThumbnail)
+                .load(R.drawable.ic_comment_empty)
+                .into(binding.collectionThumbnail)
+        } else {
+            binding.collectionThumbnail.scaleType = ImageView.ScaleType.CENTER_CROP
+            setSquareImageFromURL(
+                binding.collectionCard,
+                collection.thumb,
+                binding.collectionThumbnail
+            )
+        }
+
+        binding.collectionCard.setOnClickListener {
+            val intent = Intent(binding.collectionCard.context, CollectionActivity::class.java).apply {
+                putExtra(CollectionActivity.COLLECTION_TAG, collection)
+            }
+            binding.collectionCard.context.startActivity(intent)
         }
     }
 
     companion object {
         fun create(parent: ViewGroup): CollectionsViewHolder {
-            val itemBinding = FragmentProfilePostsBinding.inflate(
+            val itemBinding = ItemCollectionCardBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             return CollectionsViewHolder(itemBinding)
